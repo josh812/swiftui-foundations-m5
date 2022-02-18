@@ -20,14 +20,17 @@ struct HomeView: View {
                     LazyVStack {
                         ForEach(model.modules) { module in
                             VStack (spacing: 20) {
-                                NavigationLink {
-                                    ContentView()
+                                NavigationLink (
+                                    destination:
+                                        ContentView()
                                         .onAppear {
                                             model.beginModule(module.id)
-                                        }
-                                } label: {
-                                    HomeViewRow(image: module.content.image, title: "Learn \(module.category)", description: module.content.description, count: "\(module.content.lessons.count) Lessons", time: module.content.time)
-                                }
+                                        },
+                                    tag: module.id,
+                                    selection: $model.currentContentSelected,
+                                    label: {
+                                        HomeViewRow(image: module.content.image, title: "Learn \(module.category)", description: module.content.description, count: "\(module.content.lessons.count) Lessons", time: module.content.time)
+                                    })
                                 
                                 HomeViewRow(image: module.test.image, title: "\(module.category) Test", description: module.test.description, count: "\(module.test.questions.count) Questions", time: module.test.time)
                             }
@@ -39,6 +42,7 @@ struct HomeView: View {
             }
             .navigationTitle("Get Started")
         }
+        .navigationViewStyle(.stack)
     }
 }
 

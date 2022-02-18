@@ -13,7 +13,13 @@ class ContentModel: ObservableObject {
     @Published var currentModule:Module?
     var currentModuleIndex = 0
     
+    @Published var currentLesson:Lesson?
+    var currentLessonIndex = 0
+    
+    @Published var lessonDescription = NSAttributedString()
     var styleData:Data?
+    
+    @Published var currentContentSelected:Int?
     
     init() {
         getLocalData()
@@ -57,5 +63,50 @@ class ContentModel: ObservableObject {
         }
         
         currentModule = modules[currentModuleIndex]
+    }
+    
+    func beginLesson(_ lessonIndex:Int) {
+        if lessonIndex < currentModule!.content.lessons.count {
+            currentLessonIndex = lessonIndex
+        } else {
+            currentLessonIndex = 0
+        }
+        
+        currentLesson = currentModule!.content.lessons[lessonIndex]
+        lessonDescription = addStyling(currentLesson!.explanation)
+    }
+    
+    func nextLesson() {
+        currentLessonIndex += 1
+        
+        if currentLessonIndex < currentModule!.content.lessons.count {
+            currentLesson = currentModule!.content.lessons[currentLessonIndex]
+            lessonDescription = addStyling(currentLesson!.explanation)
+        } else {
+            currentLessonIndex = 0
+            currentLesson = nil
+        }
+    }
+    
+    func hasNextLesson() -> Bool {
+        return (currentLessonIndex + 1 < currentModule!.content.lessons.count)
+    }
+    
+    // MARK: Code Styling
+    private func addStyling(_ htmlString:String) -> NSAttributedString {
+        var resultString = NSAttributedString()
+        var data = Data()
+        
+        if styleData != nil {
+            data.append(self.styleData!)
+        }
+        
+        data.append(Data(htmlString.utf8))
+        
+        if let attributedString = try? NSAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil) {
+            resultString = attributedString
+        }
+        
+        return resultString
     }
 }
