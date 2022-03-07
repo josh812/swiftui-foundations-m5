@@ -17,7 +17,7 @@ struct HomeView: View {
                     .padding(.leading, 20)
                 
                 ScrollView {
-                    LazyVStack {
+                    LazyVStack (spacing: 20) {
                         ForEach(model.modules) { module in
                             VStack (spacing: 20) {
                                 NavigationLink (
